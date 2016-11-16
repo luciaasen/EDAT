@@ -54,6 +54,8 @@ int main(int argc, char** argv) {
     if (!SQL_SUCCEEDED(ret)) {
         return EXIT_FAILURE;
     }
+
+    return EXIT_SUCCESS;
   }
 
   strcpy((char*)screen_name, argv[2]);
@@ -74,6 +76,7 @@ int main(int argc, char** argv) {
           if (!SQL_SUCCEEDED(ret)) {
               return EXIT_FAILURE;
           }
+          return EXIT_SUCCESS;
         }
 
         strcpy((char*)full_name, argv[3]);
@@ -96,6 +99,7 @@ int main(int argc, char** argv) {
             if (!SQL_SUCCEEDED(ret)) {
                 return EXIT_FAILURE;
             }
+            return EXIT_SUCCESS;
         }
         /*Asignamos el valor de la primera columna a la variable nousuario*/
         SQLBindCol(stmt, 0, SQL_C_SBIGINT, &nousuario, sizeof(nousuario), NULL);
@@ -114,6 +118,7 @@ int main(int argc, char** argv) {
             if (!SQL_SUCCEEDED(ret)) {
                 return EXIT_FAILURE;
             }
+            return EXIT_SUCCESS;
         }
         else{
           if (!SQL_SUCCEEDED(ret = SQLExecute(stmt4))) {
@@ -132,6 +137,7 @@ int main(int argc, char** argv) {
               if (!SQL_SUCCEEDED(ret)) {
                   return EXIT_FAILURE;
               }
+              return EXIT_SUCCESS;
           }
           SQLBindCol(stmt4, 1, SQL_C_SLONG, &y, sizeof(y), NULL);
           if (!SQL_SUCCEEDED(ret = SQLFetch(stmt4))) {
@@ -150,6 +156,7 @@ int main(int argc, char** argv) {
               if (!SQL_SUCCEEDED(ret)) {
                   return EXIT_FAILURE;
               }
+              return EXIT_SUCCESS;
           }
           else{
             SQLBindParameter(stmt2, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &y, 0, NULL);
@@ -172,8 +179,9 @@ int main(int argc, char** argv) {
                 if (!SQL_SUCCEEDED(ret)) {
                     return EXIT_FAILURE;
                 }
+                return EXIT_SUCCESS;
             }
-            printf("Usuario añadido con éxito.\n");
+            printf("Usuario %s añadido con éxito.\n", screen_name);
             fflush(stdout);
             SQLCloseCursor(stmt);
             SQLCloseCursor(stmt4);
@@ -201,6 +209,7 @@ int main(int argc, char** argv) {
             if (!SQL_SUCCEEDED(ret)) {
                 return EXIT_FAILURE;
             }
+            return EXIT_SUCCESS;
         }
         /*Asignamos el valor de a primera columna a la variable nousuario*/
         SQLBindCol(stmt, 1, SQL_INTEGER, &nousuario, sizeof(nousuario), NULL);
@@ -222,6 +231,7 @@ int main(int argc, char** argv) {
                 if (!SQL_SUCCEEDED(ret)) {
                     return EXIT_FAILURE;
                 }
+                return EXIT_SUCCESS;
             }
             SQLCloseCursor(stmt);
             SQLCloseCursor(stmt3);
@@ -251,6 +261,7 @@ int main(int argc, char** argv) {
         if (!SQL_SUCCEEDED(ret)) {
             return EXIT_FAILURE;
         }
+        return EXIT_SUCCESS;
 
       }
 
