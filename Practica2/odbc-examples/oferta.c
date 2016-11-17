@@ -40,7 +40,8 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
   }
 
-  descuento = 1 - (atoi(argv[1])/100);
+  descuento = 1 - (atoi(argv[1])/(float)100);
+  printf("%f\n", descuento);
   strcpy((char*)fecha1, argv[2]);
   strcpy((char*)fecha2, argv[3]);
 
@@ -66,7 +67,6 @@ int main(int argc, char **argv) {
 
   if (!SQL_SUCCEEDED(ret = SQLFetch(stmt))){ /*No hay ofertas*/
     ofertaid = 1;
-    printf("CACA %d", ofertaid);
   }
 
   SQLCloseCursor(stmt);
@@ -94,12 +94,15 @@ int main(int argc, char **argv) {
 
   SQLCloseCursor(stmt);
 
-  for (i = 4 ; i <= argc - 4; i++){
+  if (argc >= 4){
+
+  SQLPrepare(stmt, (SQLCHAR*) "insert into afectaoferta(ofertaid, isbn) values (?, ?)", SQL_NTS);
+
+  for (i = 4 ; i < argc; i++){
     strcpy((char*)isbn, argv[i]);
-    SQLPrepare(stmt, (SQLCHAR*) "insert into afectaoferta values (?, ?)", SQL_NTS);
-    SQLBindParameter(stmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, 0, 0, isbn, 0, NULL);
     SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &ofertaid, 0, NULL);
-    if (!SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
+    SQLBindParameter(stmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, 0, 0, isbn, 0, NULL);
+        if (!SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
         printf("Error al asignar el isbn %d a la oferta.\n", i - 3);
         fflush(stdout);
         SQLCloseCursor(stmt);
@@ -112,8 +115,17 @@ int main(int argc, char **argv) {
         }
         return EXIT_SUCCESS;
     }
-    SQLCloseCursor(stmt);
   }
+    SQLCloseCursor(stmt);
+}
+
+else{
+  printf("Oferta añadida con éxito.\n");
+  printf("No se añadió ningun ISBN a la oferta.\n");
+}
+
+  printf("Oferta añadida con éxito.\n");
+  printf("Se añadieron %d ISBN a la oferta.\n", i - 4);
 
   /* free up statement handle */
   SQLFreeHandle(SQL_HANDLE_STMT, stmt);
