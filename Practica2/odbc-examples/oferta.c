@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   SQLHDBC dbc;
   SQLRETURN ret;
   SQLHSTMT stmt;
-  SQLFLOAT descuento; /*posible error*/
+  SQLDOUBLE descuento; /*posible error*/
   SQLCHAR fecha2[512];
   SQLCHAR fecha1[512];
   SQLCHAR isbn[512];
@@ -40,8 +40,8 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
   }
 
-  descuento = 1 - (atoi(argv[1])/(float)100);
-  printf("%f\n", descuento);
+  descuento = (double)atoi(argv[1]);
+  descuento = (1 - descuento/100);
   strcpy((char*)fecha1, argv[2]);
   strcpy((char*)fecha2, argv[3]);
 
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
   SQLPrepare(stmt, (SQLCHAR*) "insert into oferta (descuento, id, fecha1, fecha2) values (?, ?, ?, ?)", SQL_NTS);
 
-  SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_FLOAT, SQL_FLOAT, 0, 0, &descuento, 0, NULL);
+  SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_DOUBLE, SQL_DOUBLE, 0, 0, &descuento, 0, NULL);
   SQLBindParameter(stmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &ofertaid, 0, NULL);
   SQLBindParameter(stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_TYPE_DATE, 0, 0, fecha1, 0, NULL);
   SQLBindParameter(stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_TYPE_DATE, 0, 0, fecha2, 0, NULL);
@@ -95,7 +95,6 @@ int main(int argc, char **argv) {
   SQLCloseCursor(stmt);
 
   if (argc >= 4){
-
   SQLPrepare(stmt, (SQLCHAR*) "insert into afectaoferta(ofertaid, isbn) values (?, ?)", SQL_NTS);
 
   for (i = 4 ; i < argc; i++){
