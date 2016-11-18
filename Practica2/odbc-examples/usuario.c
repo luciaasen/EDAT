@@ -4,6 +4,7 @@
 #include <sql.h>
 #include <sqlext.h>
 #include "odbc.h"
+#include <time.h>
 
 
 int main(int argc, char** argv) {
@@ -17,8 +18,11 @@ int main(int argc, char** argv) {
   SQLRETURN ret; /* ODBC API return status */
   SQLCHAR full_name[512];
   SQLCHAR screen_name[512];
+  SQLCHAR fecha[512];
   SQLINTEGER nousuario;
   SQLINTEGER y;
+  time_t tiempo;
+  struct tm *tlocal;
 
   /* CONNECT */
   /*CONECTO CON LA BASE DE DATOS*/
@@ -33,7 +37,7 @@ int main(int argc, char** argv) {
   SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt4);
 
   SQLPrepare(stmt, (SQLCHAR*) "select nousuario from usuario where screen_name = ? and borrado = false", SQL_NTS);
-  SQLPrepare(stmt2, (SQLCHAR*) "insert into usuario (nousuario, ccard, screen_name, full_name, fecha) values (?, 0000000000000000, ?, ?, '2016-11-13')", SQL_NTS);
+  SQLPrepare(stmt2, (SQLCHAR*) "insert into usuario (nousuario, ccard, screen_name, full_name, fecha) values (?, 0000000000000000, ?, ?, ?)", SQL_NTS);
   SQLPrepare(stmt3, (SQLCHAR*) "update usuario set borrado = true where screen_name = ?", SQL_NTS);
   SQLPrepare(stmt4, (SQLCHAR*) "select nousuario + 1 from usuario order by nousuario desc", SQL_NTS);
   /*Pedimos información al usuario*/
@@ -80,6 +84,9 @@ int main(int argc, char** argv) {
         }
 
         strcpy((char*)full_name, argv[3]);
+        tiempo = time(0);
+        tlocal = localtime(&tiempo);
+        strftime((char*)fecha,128,"%Y/%m/%d",tlocal);
 
         /*Añadimos el screen_name solicitado a nuestra query*/
         SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, 0, 0, screen_name, 0, NULL);
@@ -162,6 +169,7 @@ int main(int argc, char** argv) {
             SQLBindParameter(stmt2, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &y, 0, NULL);
             SQLBindParameter(stmt2, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, 0, 0, screen_name, 0, NULL);
             SQLBindParameter(stmt2, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, 0, 0, full_name, 0, NULL);
+            SQLBindParameter(stmt2, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_TYPE_DATE, 0, 0, fecha, 0, NULL);
             if (!SQL_SUCCEEDED(ret = SQLExecute(stmt2))) {
                 printf("Error 3 al insertar usuario.\n");
                 fflush(stdout);
