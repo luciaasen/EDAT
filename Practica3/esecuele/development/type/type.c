@@ -10,6 +10,10 @@ value_length(type_t type, void* value) {
             return sizeof(int);
         case STR:
             return (strlen((char*) value) + 1) * sizeof(char);
+        case DBL:
+            return sizeof(double);
+        case LNG:
+            return sizeof(long);
         default:
             return 0;
     }
@@ -24,16 +28,33 @@ print_value(FILE* f, type_t type, void* value) {
         case STR:
             fprintf(f, "%s", (char*) value);
             break;
+        case DBL:
+            fprintf(f, "%lf", *((double*) value));
+            break;
+        case LNG:
+            fprintf(f, "%ld", *((long*) value));
     }
 }
 
 int
 value_cmp(type_t type, void* value1, void* value2) {
+    double buff;
     switch(type) {
         case INT:
-            return *((int*) value1) - *((int*) value2); 
+            return *((int*) value1) - *((int*) value2);
         case STR:
             return strcmp((char*) value1, (char*) value2);
+        /*Como la función devuelve un int tendremos problemas con los valores que
+        para los que la resta valga 0,algo, ya que lo convertirá a 0*/
+        case DBL:
+            buff = *((double*) value1) - *((double*) value2);
+            if(buff < 0)
+              return -1;
+            if(buff > 0)
+              return 1;
+            return 0;
+        case LNG:
+            return *((long*) value1) - *((long*) value2);
         default:
             return 0;
     }
@@ -44,6 +65,10 @@ type_t type_parse(char* type_name) {
         return INT;
     } else if (strcmp(type_name, "STR") == 0) {
         return STR;
+    } else if (strcmp(type_name, "DBL") == 0) {
+        return DBL;
+    } else if (strcmp(type_name, "LNG") == 0) {
+        return LNG;
     } else {
         return -1;
     }
@@ -51,7 +76,7 @@ type_t type_parse(char* type_name) {
 
 void* value_parse(type_t type, char* literal) {
     void* value;
-    
+
     switch(type) {
         case INT:
             value = malloc(sizeof(int));
@@ -61,10 +86,18 @@ void* value_parse(type_t type, char* literal) {
             value = malloc((strlen(literal) + 1) * sizeof(char));
             strcpy(value, literal);
             break;
+        case DBL:
+            value = malloc(sizeof(double));
+            *((double*) value) = atof(literal);
+            break;
+        case LNG:
+            value = malloc(sizeof(long));
+            *((long*) value) = atol(literal);
+            break;
         default:
             value = NULL;
             break;
     }
-    
+
     return value;
 }
