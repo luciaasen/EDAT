@@ -1,3 +1,5 @@
+/*Grupo 1201, Lucia Asencio y David Garcia*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

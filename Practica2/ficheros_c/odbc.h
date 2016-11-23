@@ -1,3 +1,5 @@
+/*Grupo 1201, Lucia Asencio y David Garcia*/
+
 #ifndef AUX_H
 #define AUX_H
 

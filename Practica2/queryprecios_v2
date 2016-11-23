@@ -1,0 +1,76 @@
+﻿--Para las compras sin oferta, nuestra tabla guardaria el precio de la edicion por cada oferta
+--que afecta  ala edicion y NO esta en vigor en fecha de compra
+--Solo necesitamos que el precio se guarde una vez por compra id, asi que guardamos el precio junto con
+--el id de compra y eliminamos luego los duplicados.
+
+--Asumimos que una misma edicion solo esta afectada por una oferta cada vez
+
+--Esquemáticamente: SELECT sum() FROM (t1 UNION t2 UNION t3 UNION t4)
+
+
+SELECT sum(final.p)
+FROM( 
+	--No fidelizados sin oferta
+	(SELECT t7.p
+	FROM
+		(SELECT DISTINCT *
+		FROM(   SELECT (e.precio) as p, t.idcompra
+			FROM edicion as e, afectaoferta as ao, oferta as o,(SELECT c.idcompra, c.nousuario, c.isbn, c.fecha
+									   FROM compra as c, edicion as e
+									   WHERE c.isbn = e.isbn and e.editor = 'jh') as t
+			WHERE   t.nousuario = 0000000 --usuarios no fidelizados
+				and t.isbn = e.isbn --miramos solo ediciones del editor X
+				and ao.isbn = t.isbn --y miramos q todas las ofectas q le afectan
+				and ao.ofertaid = o.id
+				and t.fecha NOT BETWEEN o.fecha1 and o.fecha2 --no valieran en fecha de compra
+			)as t5
+		)as t7
+	)
+
+	UNION ALL
+
+	--Fidelizados sin oferta
+	(SELECT t8.p
+	FROM 
+		(SELECT DISTINCT *
+		FROM    (SELECT (0.9 * e.precio) as p, t.idcompra
+			FROM edicion as e, afectaoferta as ao, oferta as o,(SELECT c.idcompra, c.nousuario, c.isbn, c.fecha
+									   FROM compra as c, edicion as e
+									   WHERE c.isbn = e.isbn and e.editor = 'jh') as t
+			WHERE   t.nousuario != 0000000 --usuarios fidelizados
+				and t.isbn = e.isbn --miramos solo ediciones del editor X
+				and ao.isbn = t.isbn --y miramos q todas las ofectas q le afectan
+				and ao.ofertaid = o.id
+				and t.fecha NOT BETWEEN o.fecha1 and o.fecha2 --no valieran en fecha de compra
+			)as t6
+		)as t8
+	)
+
+	UNION ALL
+
+	--No fidelizados con oferta
+	(SELECT (0.9 * o.descuento * e.precio) as p
+	FROM edicion as e, afectaoferta as ao, oferta as o,(SELECT c.idcompra, c.nousuario, c.isbn, c.fecha
+							    FROM compra as c, edicion as e
+							    WHERE c.isbn = e.isbn and e.editor = 'jh') as t
+	WHERE   t.nousuario = 0000000 --usuarios no fidelizados
+		and t.isbn = e.isbn --miramos solo ediciones del editor X
+		and ao.isbn = t.isbn --y nos quedamos de todas las ofertas que afectaran
+		and ao.ofertaid = o.id
+		and t.fecha BETWEEN o.fecha1 and o.fecha2 --con la que valiera en fecha de compra
+	)
+
+	UNION ALL
+
+	--Fidelizados con oferta
+	(SELECT (0.9 * o.descuento * e.precio) as p
+	FROM edicion as e, afectaoferta as ao, oferta as o, (SELECT c.idcompra, c.nousuario, c.isbn, c.fecha
+							     FROM compra as c, edicion as e
+							     WHERE c.isbn = e.isbn and e.editor = 'jh') as t
+	WHERE   t.nousuario != 0000000 --usuarios fidelizados
+		and t.isbn = e.isbn --miramos solo ediciones del editor X
+		and ao.isbn = t.isbn --y nos quedamos de todas las ofertas que afectaran
+		and ao.ofertaid = o.id
+		and t.fecha BETWEEN o.fecha1 and o.fecha2 --con la que valiera en fecha de compra
+	)
+) as final
