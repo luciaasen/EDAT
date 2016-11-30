@@ -4,3 +4,9 @@ probar las 4 operaciones que creamos con sus datos de banca con 2 consultas
 codigos a hacer: ta bles y records
 tablas generan ficheros binario, indicamos numero dolumnas y sus tipos: columnas no nombre, se numeran empezando en 0
 Lo progrmamado en table* se prueba con las dos primeros commands del bankbash 
+
+Formato tablas:(todo seguido)
+numcols tipo1 tipo2 tipo3 (guardas en algun sitio el final de esto)
+tam1ºdato valor1ºdato tam2ºdato valor2ºdato...tamnºdato valornºdato (guardas en algun sitio la posicion del final de cada tupla)
+
+Tabla vacia= solo cabecera (ncols + tipo)
