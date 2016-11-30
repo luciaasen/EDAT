@@ -1,0 +1,6 @@
+crear tablas (decir columnas y bsu tipo) tables.*
+introducir cosas en regs: record.*
+probar las 4 operaciones que creamos con sus datos de banca con 2 consultas
+codigos a hacer: ta bles y records
+tablas generan ficheros binario, indicamos numero dolumnas y sus tipos: columnas no nombre, se numeran empezando en 0
+Lo progrmamado en table* se prueba con las dos primeros commands del bankbash 
