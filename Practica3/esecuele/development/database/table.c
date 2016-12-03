@@ -10,6 +10,7 @@ struct table_ {
   int ncols;
   long first_pos;
   long last_pos;
+  type_t * types;
 };
 
 void table_create(char* path, int ncols, type_t* types) {
@@ -53,30 +54,45 @@ table_t* table_open(char* path) {
   /*Obtenemos el número de columnas de la tabla*/
   fread(&(table->ncols), sizeof(int), 1, table->fichero);
 
-  fseek(table->fichero, table->ncols*sizeof(type_t), SEEK_CUR);
+	/*Reservamos para el array de tipo de columnas*/
+	table->types = (type_t *)malloc(table->ncols * sizeof(type_t));
+	if(!table->types) table_close(table);
+			
+	/*Leemos los tipos de las columnas y nos situamos al final de la cabecera*/
+  fread(table->types, sizeof(type_t), table->ncols, file);
   table_first_pos = ftell(table->fichero);
-  /*FALTA EL FINAL Y DEVOLVER*/
+  fseek(table->fichero, 0, SEEK_END);
+  table_last_pos =  ftell(table->fichero);
+  return tables;
 
 }
 
 void table_close(table_t* table) {
-  /* To be implemented */
+  if(table){
+  	if(table->types) free (table->types);
+  	if(table->fichero) fclose(table->fichero);
+		free(table);
+	}
 }
 
 int table_ncols(table_t* table) {
-  /* To be implemented */
+  if(!table) return -1;
+  return table->ncols;
 }
 
 type_t* table_types(table_t* table) {
-  /* To be implemented */
+  if(!table) return NULL;
+  return table->types;
 }
 
 long table_first_pos(table_t* table) {
-  /* To be implemented */
+  if(!table) return -1;
+  return table->first_pos;
 }
 
 long table_last_pos(table_t* table) {
-  /* To be implemented */
+  if(!table) return -1;
+  return table->last_pos;
 }
 
 record_t* table_read_record(table_t* table, long pos) {
