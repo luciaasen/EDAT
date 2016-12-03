@@ -116,8 +116,14 @@ record_t* table_read_record(table_t* table, long pos) {
 		
 		/*Leemos valor*/
 		fread(values[i], size, 1, table->fichero);
+		
+		/*Guardamos la posicion del siguiente*/
+		
   }
   
+  rec = record_create(values, ncols, next);
+  
+  return rec;
   /*malloc de values = malloc(table->ncols*sizeof(void*))*/
   /*for(i, i ?< ncols, i++){
     fread(&size, sizeof(type_t), 1, table->file)
