@@ -97,9 +97,27 @@ long table_last_pos(table_t* table) {
 
 record_t* table_read_record(table_t* table, long pos) {
   /* To be implemented */
-  /*void** values*/
-  /*Comprobar que la posicion que nos pasan no typeses la ultima (EOF)*/
-  /*Hacemos fseek*/
+  void** values;
+  record *rec;
+  int i, size, ncols;
+  long next;
+      
+  if(!table || table->last_pos == pos) return NULL;
+  
+  ncols = table_ncols(table);
+  values = (void **)malloc(rec->ncols * sizeof(void *));
+  fseek(table->fichero, pos, SEEK_SET);
+  for(i = 0; i < rec->ncols; i++){
+  
+  	/*Leemos tamaño y reservamos*/
+    fread(&size, size_t, 1, table->fichero);
+    /*fread(&size, sizeof(type_t), 1, table->file)*/    	
+  	values[i] = malloc (size):
+		
+		/*Leemos valor*/
+		fread(values[i], size, 1, table->fichero);
+  }
+  
   /*malloc de values = malloc(table->ncols*sizeof(void*))*/
   /*for(i, i ?< ncols, i++){
     fread(&size, sizeof(type_t), 1, table->file)
