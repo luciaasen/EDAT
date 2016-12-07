@@ -118,8 +118,8 @@ record_t* table_read_record(table_t* table, long pos) {
 		fread(values[i], size, 1, table->fichero);
 		
 		/*Guardamos la posicion del siguiente*/
-		fread(&next, long, 1, table->fichero);		
-  }
+		nex = ftell(table->fichero);
+}
   
   rec = record_create(values, ncols, next);
   
