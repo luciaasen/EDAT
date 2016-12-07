@@ -23,8 +23,8 @@ void table_create(char* path, int ncols, type_t* types) {
   file = fopen(path, "w");
   if(!file)
     return;
-  fwrite(n_cols, sizeof(int), 1, file);
-  fwrite(types, sizeof(type_t), n_cols, file);
+  fwrite(&ncols, sizeof(int), 1, file);
+  fwrite(types, sizeof(type_t), ncols, file);
   fclose(file);
 }
 
@@ -47,7 +47,7 @@ table_t* table_open(char* path) {
   if(!table)
     return NULL;
 
-  table->fichero = fopen(path, "r");
+  table->fichero = fopen(path, "r+");
   if(!table->fichero)
     return NULL;
 
@@ -59,11 +59,11 @@ table_t* table_open(char* path) {
 	if(!table->types) table_close(table);
 			
 	/*Leemos los tipos de las columnas y nos situamos al final de la cabecera*/
-  fread(table->types, sizeof(type_t), table->ncols, file);
-  table_first_pos = ftell(table->fichero);
+  fread(table->types, sizeof(type_t), table->ncols, table->fichero);
+  table->first_pos = ftell(table->fichero);
   fseek(table->fichero, 0, SEEK_END);
-  table_last_pos =  ftell(table->fichero);
-  return tables;
+  table->last_pos =  ftell(table->fichero);
+  return table;
 
 }
 
@@ -98,43 +98,41 @@ long table_last_pos(table_t* table) {
 record_t* table_read_record(table_t* table, long pos) {
   /* To be implemented */
   void** values;
-  record *rec;
+  record_t *rec;
   int i, size, ncols;
   long next;
       
   if(!table || table->last_pos == pos) return NULL;
   
   ncols = table_ncols(table);
-  values = (void **)malloc(rec->ncols * sizeof(void *));
+  values = (void **)malloc(table->ncols * sizeof(void *));
   fseek(table->fichero, pos, SEEK_SET);
-  for(i = 0; i < rec->ncols; i++){
+  for(i = 0; i < table->ncols; i++){
   
   	/*Leemos tamaño y reservamos*/
-    fread(&size, size_t, 1, table->fichero);
-    /*fread(&size, sizeof(type_t), 1, table->file)*/    	
-  	values[i] = malloc (size):
+    fread(&size, sizeof(size_t), 1, table->fichero);	
+  	values[i] = malloc(size);
 		
-		/*Leemos valor*/
-		fread(values[i], size, 1, table->fichero);
+	/*Leemos valor*/
+	fread(values[i], size, 1, table->fichero);
 		
-		/*Guardamos la posicion del siguiente*/
-		nex = ftell(table->fichero);
 }
+  /*Guardamos la posicion del siguiente*/
+  next = ftell(table->fichero);
   
   rec = record_create(values, ncols, next);
   
   return rec;
-  /*malloc de values = malloc(table->ncols*sizeof(void*))*/
-  /*for(i, i ?< ncols, i++){
-    fread(&size, sizeof(type_t), 1, table->file)
-    values = malloc(size);
-    fread(values[i], size, 1, tabla->file)
-    next = ftell
-    record_create(values, table->ncols, next);
-  }*/
+
 }
 
 void table_insert_record(table_t* table, void** values) {
-  /* To be implemented */
-  /*Pensar nosotros*/
+    int i;
+    if(!table || !values) return ;
+    /*Hay que incrementar el last pos*/
+    fseek(table->fichero, table->last_pos, SEEK_SET);
+    for(i = 0 ; i < table->ncols ; i++)
+        fwrite(values[i], value_length(table->types[i], values[i]), 1, table->fichero);
+    table->last_pos = ftell(table->fichero);
+        
 }
