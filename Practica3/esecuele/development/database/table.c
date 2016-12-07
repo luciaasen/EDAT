@@ -57,7 +57,7 @@ table_t* table_open(char* path) {
 	/*Reservamos para el array de tipo de columnas*/
 	table->types = (type_t *)malloc(table->ncols * sizeof(type_t));
 	if(!table->types) table_close(table);
-			
+
 	/*Leemos los tipos de las columnas y nos situamos al final de la cabecera*/
   fread(table->types, sizeof(type_t), table->ncols, table->fichero);
   table->first_pos = ftell(table->fichero);
@@ -101,38 +101,42 @@ record_t* table_read_record(table_t* table, long pos) {
   record_t *rec;
   int i, size, ncols;
   long next;
-      
+
   if(!table || table->last_pos == pos) return NULL;
-  
+
   ncols = table_ncols(table);
   values = (void **)malloc(table->ncols * sizeof(void *));
   fseek(table->fichero, pos, SEEK_SET);
   for(i = 0; i < table->ncols; i++){
-  
+
   	/*Leemos tamaño y reservamos*/
-    fread(&size, sizeof(size_t), 1, table->fichero);	
+    fread(&size, sizeof(size_t), 1, table->fichero);
   	values[i] = malloc(size);
-		
+
 	/*Leemos valor*/
 	fread(values[i], size, 1, table->fichero);
-		
+
 }
   /*Guardamos la posicion del siguiente*/
   next = ftell(table->fichero);
-  
+
   rec = record_create(values, ncols, next);
-  
+
   return rec;
 
 }
 
 void table_insert_record(table_t* table, void** values) {
-    int i;
+    int i, tam;
     if(!table || !values) return ;
     /*Hay que incrementar el last pos*/
     fseek(table->fichero, table->last_pos, SEEK_SET);
-    for(i = 0 ; i < table->ncols ; i++)
-        fwrite(values[i], value_length(table->types[i], values[i]), 1, table->fichero);
+    for(i = 0 ; i < table->ncols ; i++){
+      /*Posible error*/
+      tam = sizeof(values[i]);
+      fwrite(&tam, sizeof(size_t), 1, table->fichero);
+      fwrite(values[i], value_length(table->types[i], values[i]), 1, table->fichero);
+    }
     table->last_pos = ftell(table->fichero);
-        
+
 }
