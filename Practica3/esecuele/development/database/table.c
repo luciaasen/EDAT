@@ -127,13 +127,14 @@ record_t* table_read_record(table_t* table, long pos) {
 }
 
 void table_insert_record(table_t* table, void** values) {
-    int i, tam;
+    int i;
+    unsigned int tam;
     if(!table || !values) return ;
     /*Hay que incrementar el last pos*/
     fseek(table->fichero, table->last_pos, SEEK_SET);
     for(i = 0 ; i < table->ncols ; i++){
       /*Posible error*/
-      tam = sizeof(values[i]);
+      tam = value_length(table->types[i], values[i]);
       fwrite(&tam, sizeof(size_t), 1, table->fichero);
       fwrite(values[i], value_length(table->types[i], values[i]), 1, table->fichero);
     }
