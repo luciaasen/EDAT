@@ -40,7 +40,6 @@ table_t* table_open(char* path) {
     table->last_pos = "fin archivo"
   */
   table_t* table;
-
   /*Creamos la tabla*/
 
   table = (table_t*)malloc(sizeof(table_t));
@@ -96,7 +95,6 @@ long table_last_pos(table_t* table) {
 }
 
 record_t* table_read_record(table_t* table, long pos) {
-  /* To be implemented */
   void** values;
   record_t *rec;
   int i, size, ncols;
@@ -105,18 +103,15 @@ record_t* table_read_record(table_t* table, long pos) {
   if(!table || table->last_pos == pos) return NULL;
 
   ncols = table_ncols(table);
-  values = (void **)malloc(table->ncols * sizeof(void *));
+  values = (void **)malloc((table->ncols)* sizeof(void *));
   fseek(table->fichero, pos, SEEK_SET);
   for(i = 0; i < table->ncols; i++){
-
-  	/*Leemos tamaño y reservamos*/
+  /*Leemos tamaño y reservamos*/
     fread(&size, sizeof(size_t), 1, table->fichero);
   	values[i] = malloc(size);
-
 	/*Leemos valor*/
-	fread(values[i], size, 1, table->fichero);
-
-}
+	 fread(values[i], size, 1, table->fichero);
+  }
   /*Guardamos la posicion del siguiente*/
   next = ftell(table->fichero);
 

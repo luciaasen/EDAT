@@ -8,11 +8,11 @@ struct record_ {
 
 record_t* record_create(void** values, int ncols, long next) {
   record_t* record;
-
+  if(!values || ncols <= 0 || next < 0)
+    return NULL;
   record = (record_t*)malloc(sizeof(record));
   if(!record)
     return NULL;
-
   record->values = values;
   record->ncols = ncols;
   record->next = next;
@@ -39,7 +39,7 @@ void record_free(record_t* record) {
     if(record->values[i])
         free(record->values[i]);
   }
-  
-  free(record->values);  
+
+  free(record->values);
   free(record);
 }
