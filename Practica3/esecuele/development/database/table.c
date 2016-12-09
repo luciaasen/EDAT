@@ -99,7 +99,7 @@ record_t* table_read_record(table_t* table, long pos) {
   record_t *rec;
   int i, size, ncols;
   long next;
-
+	
   if(!table || table->last_pos == pos) return NULL;
 
   ncols = table_ncols(table);
