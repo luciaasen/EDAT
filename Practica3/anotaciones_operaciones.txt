@@ -1,87 +1,87 @@
 Trabajamos a distintos niveles:
 
--- NIVEL CONDICI”N --
+-- NIVEL CONDICI√ìN --
 
 < Ni lo he mirado... >
 
--- NIVEL OPERACI”N (GLOBAL) --
+-- NIVEL OPERACI√ìN (GLOBAL) --
 
-Una operaciÛn consiste en un estructura en la que se van a guardar los resultados de ejecutarla sobre un base de datos
+Una operaci√≥n consiste en un estructura en la que se van a guardar punteros a funciones (propios de cada tipo de instrucci√≥n, como se ve m√°s adelante).
 
 	ESTRUCTURA
 
--> 	Campo reset: Es un puntero a funciÛn al que se le pasa una lista de argumentos
-->	Campo next: Es un puntero a funciÛn al que se le pasa una lista de argumentos. Devuelve un int != 0 si sigue habiendo resultados
-->	Campo get: Es un puntero a funciÛn al que se le pasa el n˙mero de columna y los argumentos. Devuelve un void*
-->	Campo close: Es un puntero a funciÛn al que se le pasa una lista de argumentos
--> 	Campo ncols: Guarda el n˙mero de columnas que tiene nuestra operaciÛn
-->	Campo types: Tipos de cada columna de la operaciÛn
-->	Campo args: Creo que es el array donde guardamos los resultados de cada operaciÛn °Es el iterador!
+-> 	Campo reset: Es un puntero a funci√≥n al que se le pasa una lista de argumentos
+->	Campo next: Es un puntero a funci√≥n al que se le pasa una lista de argumentos. Devuelve un int != 0 si sigue habiendo resultados
+->	Campo get: Es un puntero a funci√≥n al que se le pasa el n√∫mero de columna y los argumentos. Devuelve un void*
+->	Campo close: Es un puntero a funci√≥n al que se le pasa una lista de argumentos
+-> 	Campo ncols: Guarda el n√∫mero de columnas que tiene nuestra operaci√≥n
+->	Campo types: Tipos de cada columna de la operaci√≥n
+->	Campo args: Creo que es el array donde guardamos los resultados de cada operaci√≥n ¬°Es el iterador!
 
 	FUNCIONES
 	
-	OBSERVACI”N: Estas funciones son muy generales, al ser punteros har·n cosas determinadas en cada una de las funciones (SELECT,
+	OBSERVACI√ìN: Estas funciones son muy generales, al ser punteros har√°n cosas determinadas en cada una de las funciones (SELECT,
 	LIMIT, OFFSET...)
 
-->	operation_reset esta funciÛn adjudica a los argumentos del campo (funciÛn) reset los propios argumentos de la operaciÛn, 
-	esto provoca que el "iterador de la operaciÛn" vuelva a la primera posiciÛn
--> 	operation_next hace lo mismo que reset, avanza hacia el siguiente resultado de la operaciÛn, devolviendo != 0 si sigue habiendo resultadosÁ
--> 	operation_get devuelve el valor de la col-Èsima columna de nuestra consulta actual (donde marque el iterador)
-->	operation_close cierra y libera la operaciÛn
-->	devuelve el n˙mero de columnas de una operaciÛn
+->	operation_reset esta funci√≥n adjudica a los argumentos del campo (funci√≥n) reset los propios argumentos de la operaci√≥n, 
+	esto provoca que el "iterador de la operaci√≥n" vuelva a la primera posici√≥n
+-> 	operation_next hace lo mismo que reset, avanza hacia el siguiente resultado de la operaci√≥n, devolviendo != 0 si sigue habiendo resultados
+-> 	operation_get devuelve el valor de la col-√©sima columna de nuestra consulta actual (donde marque el iterador)
+->	operation_close cierra y libera la operaci√≥n
+->	devuelve el n√∫mero de columnas de una operaci√≥n
 ->	devuelve los tipos de la consulta
 	
 
--- NIVEL FUNCI”N (LO QUE QUEREMOS IMPLEMENTAR) -- 
+-- NIVEL FUNCI√ìN (LO QUE QUEREMOS IMPLEMENTAR) -- 
 
-******AN¡LISIS DE LA FUNCI”N SEQUENTIAL******
+******AN√ÅLISIS DE LA FUNCI√ìN SEQUENTIAL******
 
-	A la vista del cÛdigo, SEQUENTIAL va a ser la suboperaciÛn por excelencia (Se ver· en el campo suboperaciÛn de SELECT m·s abajo). 
+	A la vista del c√≥digo, SEQUENTIAL va a ser la suboperaci√≥n por excelencia (Se ver√° en el campo suboperaci√≥n de SELECT m√°s abajo). 
 	
 	ESTRUCTURA
 	
 ->	Puntero a tabla
--> 	long con el valor de la posiciÛn actual
+-> 	long con el valor de la posici√≥n actual
 ->	Puntero a record 
 
 	FUNCIONES
 	
-->	operation_sequential_create recibe un puntero a tabla. Crea una operaciÛn global y reserva memoria para los sequential_args (que ser·n los args de la anterior).
-	Adjudica a args el puntero a tabla que recibe, le de valor a pos -1 y el record lo apunta a NULL. DespuÈs adjudicamos las tres operaciones de abajo a los punteros
-	a funciÛn de la operaciÛn global, ncols ser· el n∫ de columnas de la tabla y los types los de la tabla tambiÈn.
-->	operation_sequential_reset le da a la posiciÛn de nuevo el valor -1 y liberamos el registro en el que tuviesemos informaciÛn
-->	operation_sequential_next si pos = -1 le damos el valor del table_first_pos, si no, pos = record_next. En caso de que ya haya informaciÛn en el registro 
-	lo liberamos. Hacemos table_read_record en la nueva posiciÛn. Devolvemos 0 si el record es NULL (o sea, que ya no hay m·s records) o != 0 si se ha leÌdo bien.
+->	operation_sequential_create recibe un puntero a tabla. Crea una operaci√≥n global y reserva memoria para los sequential_args (que ser√°n los args de la anterior).
+	Adjudica a args el puntero a tabla que recibe, le de valor a pos -1 y el record lo apunta a NULL. Despu√©s adjudicamos las tres operaciones de abajo a los punteros
+	a funci√≥n de la operaci√≥n global, ncols ser√° el n¬∫ de columnas de la tabla y los types los de la tabla tambi√©n.
+->	operation_sequential_reset le da a la posici√≥n de nuevo el valor -1 y liberamos el registro en el que tuviesemos informaci√≥n
+->	operation_sequential_next si pos = -1 le damos el valor del table_first_pos, si no, pos = record_next. En caso de que ya haya informaci√≥n en el registro 
+	lo liberamos. Hacemos table_read_record en la nueva posici√≥n. Devolvemos 0 si el record es NULL (o sea, que ya no hay m√°s records) o != 0 si se ha le√≠do bien.
 -> 	operation_sequential_get simpemente devuelve el valor de la columna que le pasamos como argumento del registro de la estructura. (record_get)
 ->	operation_sequential_close libera el record y la estructura en general.
 	
 	
-******AN¡LISIS DE LA FUNCI”N SELECT******
+******AN√ÅLISIS DE LA FUNCI√ìN SELECT******
 	
 	ESTRUCTURA
 	
-->	Campo condiciÛn: Guarda la condiciÛn que se debe de cumplir para que la fila se seleccione
-->	Campo suboperaciÛn: Es un puntero a operaciÛn que se ejecuta de manera m·s general. Si nos fijamos en el enunciado todas las operaciones salvo SEQUENTIAL
-	se ejecutan llamando a otra operaciÛn anteriormente. AsÌ pues, si queremos llamar a select primero debemos llamar a sequential y trabajar sobre los datos 
-	de la consulta que esta nos proporciona (seleccionando ˙nicamente los que nos interesan seg˙n el criterio de la condiciÛn, como veremos m·s abajo).
+->	Campo condici√≥n: Guarda la condici√≥n que se debe de cumplir para que la fila se seleccione
+->	Campo suboperaci√≥n: Es un puntero a operaci√≥n que se ejecuta de manera m√°s general. Si nos fijamos en el enunciado todas las operaciones salvo SEQUENTIAL
+	se ejecutan llamando a otra operaci√≥n anteriormente. As√≠ pues, si queremos llamar a select primero debemos llamar a sequential y trabajar sobre los datos 
+	de la consulta que esta nos proporciona (seleccionando √∫nicamente los que nos interesan seg√∫n el criterio de la condici√≥n, como veremos m√°s abajo).
 
 	FUNCIONES
 	
-->	operation_select_create crea la operaciÛn. NÛtese que no existÌa un operation_ini global, por lo que se crea aquÌ.
+->	operation_select_create crea la operaci√≥n. N√≥tese que no exist√≠a un operation_ini global, por lo que se crea aqu√≠.
 	1.- Reservamos memoria para un operation_select_args_t y le adjudicamos la suboperacion y condicion que nos pasan
-	2.-	Reservamos memoria para una operaciÛn global. A su campo args le adjudicamos el operation_select_args, a cada una de sus tres funciones 
-	(reset, get y close) las de select que se muestran m·s abajo. Al campo ncols le damos el valor de ncols de la suboperaciÛn (mirar si por ejemplo en
-	la operaciÛn proyecciÛn esto es distinto), se reserva memoria para los types y los copiamos desde la suboperaciÛn.
--> 	operation_select_reset nos devuelve al primer resultado de la operaciÛn
-->	operation_select_next selecciona en quÈ filas de la tabla se va a hacer read_record
-	1.-	Crea un puntero a select y a operaciÛn (supongo que para hacer el cÛdigo m·s legible)
+	2.-	Reservamos memoria para una operaci√≥n global. A su campo args le adjudicamos el operation_select_args, a cada una de sus tres funciones 
+	(reset, get y close) las de select que se muestran m√°s abajo. Al campo ncols le damos el valor de ncols de la suboperaci√≥n (mirar si por ejemplo en
+	la operaci√≥n proyecci√≥n esto es distinto), se reserva memoria para los types y los copiamos desde la suboperaci√≥n.
+-> 	operation_select_reset nos devuelve al primer resultado de la operaci√≥n
+->	operation_select_next selecciona en qu√© filas de la tabla se va a hacer read_record
+	1.-	Crea un puntero a select y a operaci√≥n (supongo que para hacer el c√≥digo m√°s legible)
 	2.- Itera en un bucle while: 
-		- CondiciÛn: que podamos seguir leyendo resultados de la operaciÛn y que la condiciÛn que hay que evaluar se incumpla
-			(asÌ no saltamos las filas que no queremos)
-		- Resultado: A cada iteraciÛn se guarda en un int ret el valor de operation_next, cuando una de las condiciones no se cumple,
-		ya sea porque no quedan m·s next que leer o porque esos resultados no cumplen la condiciÛn del select salimos del bucle
+		- Condici√≥n: que podamos seguir leyendo resultados de la operaci√≥n y que la condici√≥n que hay que evaluar se incumpla
+			(as√≠ no saltamos las filas que no queremos)
+		- Resultado: A cada iteraci√≥n se guarda en un int ret el valor de operation_next, cuando una de las condiciones no se cumple,
+		ya sea porque no quedan m√°s next que leer o porque esos resultados no cumplen la condici√≥n del select salimos del bucle
 	3.-	Devolvemos el valor ret
-->	operation_select_get devuelve un void* con el valor de la col-Èsima columna (encapsula la funciÛn operation_get de la suboperaciÛn)
-	Lo que pasa es que haciendo "bien" previamente el next nos hemos situado en una fila de args que sÌ que cumple las condiciones del select
-->	operation_select_close cierra la condiciÛn y la operaciÛn (suboperaciÛn) y libera la operaciÛn select
+->	operation_select_get devuelve un void* con el valor de la col-√©sima columna (encapsula la funci√≥n operation_get de la suboperaci√≥n)
+	Lo que pasa es que haciendo "bien" previamente el next nos hemos situado en una fila de args que s√≠ que cumple las condiciones del select
+->	operation_select_close cierra la condici√≥n y la operaci√≥n (suboperaci√≥n) y libera la operaci√≥n select
 
