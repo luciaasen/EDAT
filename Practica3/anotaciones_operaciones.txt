@@ -1,0 +1,87 @@
+Trabajamos a distintos niveles:
+
+-- NIVEL CONDICIÓN --
+
+< Ni lo he mirado... >
+
+-- NIVEL OPERACIÓN (GLOBAL) --
+
+Una operación consiste en un estructura en la que se van a guardar los resultados de ejecutarla sobre un base de datos
+
+	ESTRUCTURA
+
+-> 	Campo reset: Es un puntero a función al que se le pasa una lista de argumentos
+->	Campo next: Es un puntero a función al que se le pasa una lista de argumentos. Devuelve un int != 0 si sigue habiendo resultados
+->	Campo get: Es un puntero a función al que se le pasa el número de columna y los argumentos. Devuelve un void*
+->	Campo close: Es un puntero a función al que se le pasa una lista de argumentos
+-> 	Campo ncols: Guarda el número de columnas que tiene nuestra operación
+->	Campo types: Tipos de cada columna de la operación
+->	Campo args: Creo que es el array donde guardamos los resultados de cada operación ¡Es el iterador!
+
+	FUNCIONES
+	
+	OBSERVACIÓN: Estas funciones son muy generales, al ser punteros harán cosas determinadas en cada una de las funciones (SELECT,
+	LIMIT, OFFSET...)
+
+->	operation_reset esta función adjudica a los argumentos del campo (función) reset los propios argumentos de la operación, 
+	esto provoca que el "iterador de la operación" vuelva a la primera posición
+-> 	operation_next hace lo mismo que reset, avanza hacia el siguiente resultado de la operación, devolviendo != 0 si sigue habiendo resultadosç
+-> 	operation_get devuelve el valor de la col-ésima columna de nuestra consulta actual (donde marque el iterador)
+->	operation_close cierra y libera la operación
+->	devuelve el número de columnas de una operación
+->	devuelve los tipos de la consulta
+	
+
+-- NIVEL FUNCIÓN (LO QUE QUEREMOS IMPLEMENTAR) -- 
+
+******ANÁLISIS DE LA FUNCIÓN SEQUENTIAL******
+
+	A la vista del código, SEQUENTIAL va a ser la suboperación por excelencia (Se verá en el campo suboperación de SELECT más abajo). 
+	
+	ESTRUCTURA
+	
+->	Puntero a tabla
+-> 	long con el valor de la posición actual
+->	Puntero a record 
+
+	FUNCIONES
+	
+->	operation_sequential_create recibe un puntero a tabla. Crea una operación global y reserva memoria para los sequential_args (que serán los args de la anterior).
+	Adjudica a args el puntero a tabla que recibe, le de valor a pos -1 y el record lo apunta a NULL. Después adjudicamos las tres operaciones de abajo a los punteros
+	a función de la operación global, ncols será el nº de columnas de la tabla y los types los de la tabla también.
+->	operation_sequential_reset le da a la posición de nuevo el valor -1 y liberamos el registro en el que tuviesemos información
+->	operation_sequential_next si pos = -1 le damos el valor del table_first_pos, si no, pos = record_next. En caso de que ya haya información en el registro 
+	lo liberamos. Hacemos table_read_record en la nueva posición. Devolvemos 0 si el record es NULL (o sea, que ya no hay más records) o != 0 si se ha leído bien.
+-> 	operation_sequential_get simpemente devuelve el valor de la columna que le pasamos como argumento del registro de la estructura. (record_get)
+->	operation_sequential_close libera el record y la estructura en general.
+	
+	
+******ANÁLISIS DE LA FUNCIÓN SELECT******
+	
+	ESTRUCTURA
+	
+->	Campo condición: Guarda la condición que se debe de cumplir para que la fila se seleccione
+->	Campo suboperación: Es un puntero a operación que se ejecuta de manera más general. Si nos fijamos en el enunciado todas las operaciones salvo SEQUENTIAL
+	se ejecutan llamando a otra operación anteriormente. Así pues, si queremos llamar a select primero debemos llamar a sequential y trabajar sobre los datos 
+	de la consulta que esta nos proporciona (seleccionando únicamente los que nos interesan según el criterio de la condición, como veremos más abajo).
+
+	FUNCIONES
+	
+->	operation_select_create crea la operación. Nótese que no existía un operation_ini global, por lo que se crea aquí.
+	1.- Reservamos memoria para un operation_select_args_t y le adjudicamos la suboperacion y condicion que nos pasan
+	2.-	Reservamos memoria para una operación global. A su campo args le adjudicamos el operation_select_args, a cada una de sus tres funciones 
+	(reset, get y close) las de select que se muestran más abajo. Al campo ncols le damos el valor de ncols de la suboperación (mirar si por ejemplo en
+	la operación proyección esto es distinto), se reserva memoria para los types y los copiamos desde la suboperación.
+-> 	operation_select_reset nos devuelve al primer resultado de la operación
+->	operation_select_next selecciona en qué filas de la tabla se va a hacer read_record
+	1.-	Crea un puntero a select y a operación (supongo que para hacer el código más legible)
+	2.- Itera en un bucle while: 
+		- Condición: que podamos seguir leyendo resultados de la operación y que la condición que hay que evaluar se incumpla
+			(así no saltamos las filas que no queremos)
+		- Resultado: A cada iteración se guarda en un int ret el valor de operation_next, cuando una de las condiciones no se cumple,
+		ya sea porque no quedan más next que leer o porque esos resultados no cumplen la condición del select salimos del bucle
+	3.-	Devolvemos el valor ret
+->	operation_select_get devuelve un void* con el valor de la col-ésima columna (encapsula la función operation_get de la suboperación)
+	Lo que pasa es que haciendo "bien" previamente el next nos hemos situado en una fila de args que sí que cumple las condiciones del select
+->	operation_select_close cierra la condición y la operación (suboperación) y libera la operación select
+
