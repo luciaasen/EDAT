@@ -20,7 +20,7 @@ int operation_limit_next(void* vargs) {
     operation_limit_args_t* args = vargs;
     operation_t* suboperation = args->suboperation;
 
-    if(!(ret = (args->actual < args->limit)))
+    if(!ret = (args->actual < args->limit))
       return ret;
 
     ret = operation_next(suboperation);
