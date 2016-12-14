@@ -18,7 +18,7 @@ int operation_count_next(void* vargs) {
     int ret;
     operation_count_args_t* args = vargs;
     operation_t* suboperation = args->suboperation;
-    if((args->counter != 0)){
+    if(!(args->counter == 0)){
       return 0;
     }
     for(args->counter = 0; operation_next(suboperation) ; args->counter++);
@@ -26,10 +26,8 @@ int operation_count_next(void* vargs) {
 }
 
 void* operation_count_get(int col, void* vargs) {
-    int * ret;
     operation_count_args_t* args = vargs;
-	ret = &(args->counter);
-    return ret;
+    return &(args->counter);
 }
 
 void operation_count_close(void* vargs) {
