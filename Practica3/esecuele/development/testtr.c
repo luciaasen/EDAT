@@ -7,11 +7,11 @@ int main(){
 
   table_t* tabla;
   type_t tipos[4], *types;
-  int ncols = 4, i, v1 = 17, r1;
-  long v4 = 1234567, r4;
+  int ncols = 4, i, v1 = 17;
+  long v4 = 1234567;
   void* values[4], *returns[4];
-  char v2[] = "prueba", *r2;
-  double v3 = 12.5, r3;
+  char v2[] = "prueba";
+  double v3 = 12.5;
   record_t* record;
 
   tipos[0] = INT;

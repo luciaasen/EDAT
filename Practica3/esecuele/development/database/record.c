@@ -13,12 +13,9 @@ record_t* record_create(void** values, int ncols, long next) {
   record = (record_t*)malloc(sizeof(record_t));
   if(!record)
     return NULL;
-  
-  printf("%d\n", 1);  
+
   record->values = values;
-  printf("%d\n", 2);
   record->ncols = ncols;
-  printf("%d\n", 3);
   record->next = next;
 
   return record;
