@@ -46,6 +46,7 @@ operation_count_create(operation_t* suboperation) {
 
       args = malloc(sizeof(operation_count_args_t));
       args->suboperation = suboperation;
+      args->counter = 0;
 
       operation = malloc(sizeof(operation_t));
       operation->args = args;

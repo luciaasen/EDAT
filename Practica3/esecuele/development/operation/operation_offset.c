@@ -22,10 +22,11 @@ int operation_offset_next(void* vargs) {
 
   if(args->actual >= args->offset){
     ret = operation_next(suboperation);
+    args->actual++;
     return ret;
   }
 
-  while ((ret = operation_next(suboperation)) && (args->actual < args->offset)){
+  while ((ret = operation_next(suboperation)) && (args->actual <= args->offset)){
     args->actual++;
   }
 
