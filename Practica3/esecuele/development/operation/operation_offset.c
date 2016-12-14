@@ -20,15 +20,8 @@ int operation_offset_next(void* vargs) {
   operation_offset_args_t* args = vargs;
   operation_t* suboperation = args->suboperation;
 
-  if(args->actual >= args->offset){
-    ret = operation_next(suboperation);
+  while ((ret = operation_next(suboperation)) && (args->actual < args->offset))
     args->actual++;
-    return ret;
-  }
-
-  while ((ret = operation_next(suboperation)) && (args->actual <= args->offset)){
-    args->actual++;
-  }
 
   return ret;
 }
@@ -65,4 +58,6 @@ operation_offset_create(operation_t* suboperation, int offset) {
   operation->ncols = suboperation->ncols;
   operation->types = malloc(operation->ncols * sizeof(type_t));
   memcpy(operation->types, suboperation->types, operation->ncols * sizeof(type_t));
+
+  return operation;;
 }
