@@ -15,23 +15,18 @@ operation_count_reset(void* vargs) {
 }
 
 int operation_count_next(void* vargs) {
-    /* Dudo de si es simplemente hacer next de la suboperación, creo que sí */
     int ret;
     operation_count_args_t* args = vargs;
     operation_t* suboperation = args->suboperation;
-    /*Está bien y es necesario este bucle?*/
-    /*while(ret = operation_next(suboperation));*/
-    /*Creo que eso nos saltaría directamente al final*/
-    /*O simplemente hay que hacer...*/
-    ret = operation_next(suboperation);
-    /*Tiene mejor pinta*/
-    return ret;
+    if(!(ret = (args->counter == 0)){
+      return ret;
+    }
+    for(args->counter = 0; operation_next(suboperation) ; args->counter++);
+    return args->counter;
 }
 
 void* operation_count_get(int col, void* vargs) {
     operation_count_args_t* args = vargs;
-    args->counter = 0;
-    for (args->counter = 0 ; operation_next(args->suboperation) ; args->counter++);
     return &(args->counter);
 }
 
@@ -56,10 +51,8 @@ operation_count_create(operation_t* suboperation) {
       operation->next = operation_count_next;
       operation->get = operation_count_get;
       operation->close = operation_count_close;
-      /*DUDA IMPORTANTE A MIRAR*/
       operation->ncols = 1;
-      operation->types = malloc(sizeof(type_t));
-      operation->types = /*????*/
+      operation->types = malloc(sizeof(int));
 
       return operation;
 }
