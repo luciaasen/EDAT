@@ -5,7 +5,6 @@
 #include "../type/type.h"
 
 struct table_ {
-  /* To be implemented */
   FILE * fichero;
   int ncols;
   long first_pos;
@@ -14,11 +13,6 @@ struct table_ {
 };
 
 void table_create(char* path, int ncols, type_t* types) {
-  /*
-    fopen(path, "w")
-    meter la cabecera con fwrite del ncols y de los tipos
-    ej: fwrite(types, sizeof(type_t), n_cols, nobrefichero)
-  */
   FILE* file;
   file = fopen(path, "w");
   if(!file)
@@ -29,19 +23,8 @@ void table_create(char* path, int ncols, type_t* types) {
 }
 
 table_t* table_open(char* path) {
-  /*
-    Hacemos un malloc de table
-    table->file = fopen
-    leemos ncols table->ncols = fread
-    leemos los tipos
-      ¿¿¿¿¿¿ malloc de table->types ?????
-      fread table->types
-    table->first_pos = ftell
-    table->last_pos = "fin archivo"
-  */
   table_t* table;
   /*Creamos la tabla*/
-
   table = (table_t*)malloc(sizeof(table_t));
   if(!table)
     return NULL;
@@ -99,7 +82,7 @@ record_t* table_read_record(table_t* table, long pos) {
   record_t *rec;
   int i, size, ncols;
   long next;
-	
+
   if(!table || table->last_pos == pos) return NULL;
 
   ncols = table_ncols(table);
@@ -128,7 +111,6 @@ void table_insert_record(table_t* table, void** values) {
     /*Hay que incrementar el last pos*/
     fseek(table->fichero, table->last_pos, SEEK_SET);
     for(i = 0 ; i < table->ncols ; i++){
-      /*Posible error*/
       tam = value_length(table->types[i], values[i]);
       fwrite(&tam, sizeof(size_t), 1, table->fichero);
       fwrite(values[i], value_length(table->types[i], values[i]), 1, table->fichero);
