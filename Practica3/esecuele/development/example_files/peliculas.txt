@@ -1,6 +1,6 @@
 #ID TITULO DIRECTOR PRECIO
-1	Forrest Gump	Robert Zemeckis	12.500000
-2	Alien	Ridley Scott	9.990000
-3	Taxi Driver	Martin Scorsese	10.500000
-4	El Exorcista	William Friedkin	5.010000
-5	Alguien voló sobre el nido del cuco	Milos Forman	23.990000	
+1	Forrest Gump	Robert	12.500000
+2	Alien	Ridley	9.990000
+3	Taxi Driver	Martin	10.500000
+4	El Exorcista	William	5.010000
+5	Alguien voló sobre el nido del cuco	Milos	23.990000	

@@ -178,6 +178,7 @@ esecuele:	$(MAINOBJS)
 	cp bank.bash ../install
 	cp -r example_files ../install/
 	cp cine.bash ../install
+	cp libreria.bash ../install
 
 
 wvs:	$(ALTOBJS)
