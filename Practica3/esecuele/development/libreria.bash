@@ -16,4 +16,9 @@ COPY compra ./example_files/compra.txt
 COPY usuario ./example_files/usuario.txt
 EOF
 
+$COMMAND query libreria_db << EOF
+usuario SEQUENTIAL 2 STR jack C_COLEQCTE SELECT compra SEQUENTIAL PRODUCT 0 6 C_COLEQCOL SELECT STR 5 P_COL 1 PROJECT edicion SEQUENTIAL PRODUCT 0 1 C_COLEQCOL SELECT STR 6 P_COL 1 PROJECT
+usuario SEQUENTIAL 2 STR jack C_COLEQCTE SELECT compra SEQUENTIAL PRODUCT 0 6 C_COLEQCOL SELECT COUNT
+EOF
+
 $COMMAND query libreria_db
