@@ -75,7 +75,7 @@ ALTOBJS= esecuele.o \
 	parser.o \
 	stack.o \
 	type.o
-
+	
 #
 # Algebra operations
 #
@@ -172,7 +172,7 @@ type.o:	$(TYPEDIR)/type.c $(TYPEDIR)/type.o
 #
 # main esecuele creation (with the table and record you made)
 #
-
+	
 esecuele:	$(MAINOBJS)
 	$(LNK) -o ../install/esecuele $(MAINOBJS)
 	cp bank.bash ../install

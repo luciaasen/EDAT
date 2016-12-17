@@ -14,6 +14,11 @@ operation_select_reset(void* vargs) {
     operation_reset(args->suboperation);
 }
 
+
+/* Te pasan un void: la primera asignacion hace que tu void sea algo
+'reconocible' y la segunda extrae la info q interesa de el ex-void.
+Luego todas las nexts de la suboper hasta q una cumple la condicion.*/
+
 int operation_select_next(void* vargs) {
     int ret;
     operation_select_args_t* args = vargs;
@@ -25,6 +30,8 @@ int operation_select_next(void* vargs) {
     return ret;
 }
 
+/* Pasa el muerto a la suboperacion*/
+
 void* operation_select_get(int col, void* vargs) {
     void* value;
     operation_select_args_t* args = vargs;
@@ -34,6 +41,8 @@ void* operation_select_get(int col, void* vargs) {
     return value;
 }
 
+/*Igual, pasar el muerto a la condicion y a la suboperacion*/
+
 void operation_select_close(void* vargs) {
     operation_select_args_t* args = vargs;
 
@@ -41,6 +50,7 @@ void operation_select_close(void* vargs) {
     operation_close(args->suboperation);
     free(args);
 }
+
 
 operation_t*
 operation_select_create(operation_t* suboperation, condition_t* condition) {

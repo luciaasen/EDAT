@@ -53,7 +53,7 @@ void table_close(table_t* table) {
   if(table){
   	if(table->types) free (table->types);
   	if(table->fichero) fclose(table->fichero);
-		free(table);
+	free(table);
 	}
 }
 

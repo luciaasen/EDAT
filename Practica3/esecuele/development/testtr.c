@@ -3,7 +3,7 @@
 #include "database/record.h"
 #include "type/type.h"
 
-int main(){
+int test(){
 
   table_t* tabla;
   type_t tipos[4], *types;

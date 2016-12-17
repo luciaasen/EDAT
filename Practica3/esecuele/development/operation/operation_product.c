@@ -8,6 +8,8 @@ typedef struct {
     operation_t* operation2;
 } operation_product_args_t;
 
+
+/*Pasa el muerto al reset de las dos suboperaciones*/
 void
 operation_product_reset(void* vargs) {
     operation_product_args_t* args = vargs;
@@ -15,6 +17,10 @@ operation_product_reset(void* vargs) {
     operation_reset(args->operation1);
     operation_reset(args->operation2);
 }
+
+
+/*Fija la tupla de la operacion uno y avanza a la siguiente de la operacion dos:
+asi consigue el producto cartesiano*/
 
 int operation_product_next(void* vargs) {
     int ret;
@@ -56,6 +62,11 @@ int operation_product_next(void* vargs) {
     return 1;
 }
 
+/*Op1: cols 1...n
+  Op2: cols n+1...m
+  Devuelve el valor de la i-esima columna del producto, lo toma de op1 u op2 
+  dependiendo de si i pertenece a 1...n o n+1...m*/
+
 void* operation_product_get(int col, void* vargs) {
     void* value;
     operation_product_args_t* args = vargs;
@@ -73,6 +84,8 @@ void* operation_product_get(int col, void* vargs) {
     return value;
 }
 
+/*Pasa muerto a suboperaciones*/
+
 void operation_product_close(void* vargs) {
     operation_product_args_t* args = vargs;
 
@@ -80,6 +93,7 @@ void operation_product_close(void* vargs) {
     operation_close(args->operation2);
     free(args);
 }
+
 
 operation_t*
 operation_product_create(operation_t* operation1, operation_t* operation2) {

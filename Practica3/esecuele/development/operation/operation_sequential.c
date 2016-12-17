@@ -8,6 +8,8 @@ typedef struct {
     record_t* record;
 } operation_sequential_args_t;
 
+
+/*Deja la operacion como si no hubiera empezado a leer*/
 void
 operation_sequential_reset(void* vargs) {
     operation_sequential_args_t* args = vargs;
@@ -16,6 +18,9 @@ operation_sequential_reset(void* vargs) {
     record_free(args->record);
     args->record = NULL;
 }
+
+/*Si el record no es el ultimo de la tabla, libera el que estaba leyendo
+y lee el siguiente. Devuelve 0 si no hubo siguiente*/
 
 int operation_sequential_next(void* vargs) {
     operation_sequential_args_t* args = vargs;
@@ -39,12 +44,18 @@ void* operation_sequential_get(int col, void* vargs) {
     return record_get(args->record, col);
 }
 
+
+/* Lo unico q libera es el record por el que va leyendo (reservado en la 
+operacion next) y el args que la contiene (reservado en create) todo lo demas
+eran cosas no reservadas*/
 void operation_sequential_close(void* vargs) {
     operation_sequential_args_t* args = vargs;
     
     record_free(args->record);
     free(args);
 }
+
+
 
 operation_t*
 operation_sequential_create(table_t* table) {
