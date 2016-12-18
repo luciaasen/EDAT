@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include "database/table.h"
-#include "database/record.h"
-#include "type/type.h"
+#include "table.h"
+#include "record.h"
+#include "type.h"
 
-int test(){
-
+int main(){
   table_t* tabla;
   type_t tipos[4], *types;
   int ncols = 4, i, v1 = 17;
