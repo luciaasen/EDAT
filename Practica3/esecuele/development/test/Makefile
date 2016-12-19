@@ -1,22 +1,42 @@
-all: testtr
+#-----------------------
+# IMPORTANTE: Los valores de los parametros de los ejercicio?_test deben ajustarse.
+# Se asume que los ficheros fuente se llaman ejercicio1.c, ejercicio2.c,...,ordenar.h
+#-----------------------
 
-testtr:	testtr.o table.o type.o index.o record.o
-	gcc -o testtr.o table.o record.o type.o index.o
-	
-record.o: record.c record.h type.h
-	gcc -c -std=c99 record.c
+CC = gcc -ansi -pedantic
+CFLAGS = -Wall
+EXE = testtr
 
-table.o: table.c table.h record.h type.h index.h
-	gcc -c -std=c99 table.c
+all : $(EXE)
 
-testtr.o: testtr.c table.h record.h type.h
-	gcc -c -std=c99 testtr.c
+.PHONY : clean
+clean :
+	rm -f *.o core $(EXE)
 
-type.o: type.c type.h
-	gcc -c -std=c99 type.c
+$(EXE) : % : %.o type.o record.o table.o
+	@echo "#---------------------------"
+	@echo "# Generando $@ "
+	@echo "# Depende de $^"
+	@echo "# Ha cambiado $<"
+	$(CC) $(CFLAGS) -o $@ $@.o type.o record.o table.o
 
-index.o: index.c index.h
-	gcc -c -std=c99 index.c
-	
-clean:
-	rm *.o
+type.o : type.c type.h
+	@echo "#---------------------------"
+	@echo "# Generando $@"
+	@echo "# Depende de $^"
+	@echo "# Ha cambiado $<"
+	$(CC) $(CFLAGS) -c $<
+
+ record.o : record.c record.h
+	@echo "#---------------------------"
+	@echo "# Generando $@"
+	@echo "# Depende de $^"
+	@echo "# Ha cambiado $<"
+	$(CC) $(CFLAGS) -c $<
+
+ table.o : table.c table.h record.h type.h
+	@echo "#---------------------------"
+	@echo "# Generando $@"
+	@echo "# Depende de $^"
+	@echo "# Ha cambiado $<"
+	$(CC) $(CFLAGS) -c $<
